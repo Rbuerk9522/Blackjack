@@ -1,0 +1,124 @@
+import pandas as pd
+import random
+
+Card_Table = pd.read_csv('Card_Table.csv', sep=',', header=0)
+player_hand = []
+dealer_hand = []
+
+
+# Function Deal
+def Deal():
+  #Defining global variables for use in other functions and clearing the dealt hands
+  global player_hand
+  global dealer_hand
+  player_hand = []
+  dealer_hand = []
+  #Pulling random cards from table to dealt hands
+  player_hand = Card_Table.sample(n=2)
+  dealer_hand = Card_Table.sample(n=2)
+  #handling a potential double Ace issue
+  if sum(player_hand['Value']) > 21:
+    player_hand.loc[(player_hand.Value == 11), ('Value')] = 1
+  if sum(dealer_hand['Value']) > 21:
+    dealer_hand.loc[(dealer_hand.Value == 11), ('Value')] = 1
+  #printing the hands to show the value of each
+  print('\nPlayer shows ', sum(player_hand['Value']), '\n',
+        player_hand[['Suit', 'Face']].to_string(index=False))
+  print('\nDealer shows ', sum(dealer_hand['Value']), '\n',
+        dealer_hand[['Suit', 'Face']].to_string(index=False))
+  #Defining blackjack status
+  if sum(player_hand['Value']) == 21:
+    print('Player shows 21, Player wins')
+  elif sum(dealer_hand['Value']) == 21:
+    print('Dealer shows 21, Player loses')
+    deal == ()
+  else:
+    print('\nWould you like to Hit or Stay?')
+#Defining the variable and options for continuing gameplay
+  NextMove = ()
+  while NextMove == ():
+    NextMove = input('')
+    #Defining what to do with input of Hit
+    if NextMove == ('hit') or NextMove == ('Hit'):
+      hit()
+      if sum(player_hand['Value']) > 21:
+        print('Player shows more than 21. Player busts!')
+      else:
+        print('Would you like to Hit or Stay?')
+      NextMove = ()
+#defining what to do with input Stay
+    elif NextMove == ('Stay') or NextMove == ('stay'):
+      while sum(dealer_hand['Value']) < 17:
+        dealer_hit()
+      if sum(dealer_hand['Value']) >21:
+        print('Dealer shows more than 21. Dealer busts!')
+  #Finishing up the program and determining winner
+      else:
+        if sum(player_hand['Value']) > sum(dealer_hand['Value']) or sum(
+           dealer_hand['Value']) > 21:
+          print('\nPlayer shows ', sum(player_hand['Value']), '\nPlayer Wins!')
+        elif sum(player_hand['Value']) < sum(dealer_hand['Value']) and sum(
+           dealer_hand['Value']) <= 21:
+          print('\nDealer shows ', sum(dealer_hand['Value']), '\nDealer Wins!')
+        else:
+          print('\nDealer shows ', sum(dealer_hand['Value']),'\n'
+          '\nPlayer shows ', sum(player_hand['Value']),'\n'
+                'Draw! Player and Dealer hands are equal')
+    else:
+      print('You have entered an incorrect option. Please type Hit or Stay.')
+      NextMove = ()
+
+
+def hit():
+  #Defining variables for function
+  global player_hand
+  player_hit = []
+  player_hand_hit = []
+  #Pulling the sample data to a new variable
+  player_hit = Card_Table.sample(n=1)
+  #combining the two variables
+  player_hand_hit = pd.concat([player_hand, player_hit], ignore_index=True)
+  #Reassigning the variable to the one that will print
+  player_hand = player_hand_hit
+  if sum(player_hand['Value']) > 21:
+    player_hand.loc[(player_hand.Value == 11), ('Value')] = 1
+  #Printing the hands that are dealt
+  print('\nPlayer shows ', sum(player_hand['Value']), '\n',
+        player_hand[['Suit', 'Face']].to_string(index=False))
+  # printing the dealer hand
+  print('\nDealer shows ', sum(dealer_hand['Value']), '\n',
+        dealer_hand[['Suit', 'Face']].to_string(index=False))
+
+
+def dealer_hit():
+  #Defining variables for functino
+  global dealer_hand
+  dealer_hit = []
+  dealer_hand_hit = []
+  #Pulling the sample data to a new variable
+  dealer_hit = Card_Table.sample(n=1)
+  #combining the two variables
+  dealer_hand_hit = pd.concat([dealer_hand, dealer_hit], ignore_index=True)
+  #Reassigning the variable to the one that will print
+  dealer_hand = dealer_hand_hit
+  #adjusting the value for Aces
+  if sum(dealer_hand['Value']) > 21:
+    dealer_hand.loc[(dealer_hand.Value == 11), ('Value')] = 1
+  #Printing the hands that are dealt
+  print('\nPlayer shows ', sum(player_hand['Value']), '\n',
+        player_hand[['Suit', 'Face']].to_string(index=False))
+  # printing the dealer hand
+  print('\nDealer shows ', sum(dealer_hand['Value']), '\n',
+        dealer_hand[['Suit', 'Face']].to_string(index=False))
+
+
+if __name__ == "__main__":
+  print('Type deal to begin')
+  deal = ()
+  while deal == ():
+    deal = input('')
+    if deal == ('deal') or deal == ('Deal'):
+      Deal()
+    else:
+      print('You have entered an incorrect option. Please type deal to begin.')
+      deal = ()
